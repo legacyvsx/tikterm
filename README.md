@@ -7,7 +7,8 @@ pip3 install yt-dlp --break-system-packages
 # Install mpv with ASCII support
 sudo apt install mpv libcaca0 ffmpeg
 
-Usage: python3 tikterm.py https://www.tiktok.com/@zachking/video/7593008028077542670
+Usage: python3 tikterm.py https://www.tiktok.com/@zachking/video/7593008028077542670 best
+
 
 Note that the ASCII art video needs a terminal that can handle:
 
