@@ -61,22 +61,33 @@ class TikTokTerminal:
             
         return player
     
-    def download_video(self, video_url):
+    def download_video(self, video_url, quality='worst'):
         """Download TikTok video using yt-dlp"""
         print(f"\nDownloading video from {video_url}...")
+        print(f"Quality: {quality}")
         print("(This may take a moment...)")
         
         temp_file = os.path.join(self.temp_dir, 'tiktok_video.mp4')
         
         try:
             # Download with yt-dlp with progress
-            result = subprocess.run([
+            cmd = [
                 'yt-dlp',
                 '-o', temp_file,
                 '--progress',
                 '--newline',
                 video_url
-            ], capture_output=False, text=True, timeout=60)
+            ]
+            
+            # Add format option if not 'best'
+            if quality == 'worst':
+                cmd.insert(3, '--format')
+                cmd.insert(4, 'worst')
+            elif quality == 'medium':
+                cmd.insert(3, '--format')
+                cmd.insert(4, 'bestvideo[height<=480]+bestaudio/best[height<=480]')
+            
+            result = subprocess.run(cmd, capture_output=False, text=True, timeout=60)
             
             if result.returncode != 0:
                 print(f"❌ Download failed")
@@ -114,10 +125,10 @@ class TikTokTerminal:
         print(f"\n{'='*50}\n")
         
         try:
-            if player == 'mpv-tct':
-                subprocess.run(['mpv', '--vo=tct', video_path])
-            elif player == 'mpv-caca':
+            if player == 'mpv-caca':
                 subprocess.run(['mpv', '--vo=caca', video_path])
+            elif player == 'mpv-tct':
+                subprocess.run(['mpv', '--vo=tct', video_path])
             else:
                 # Fallback to regular mpv
                 subprocess.run(['mpv', video_path])
@@ -148,15 +159,21 @@ def main():
         sys.exit(1)
     
     if len(sys.argv) < 2:
-        print("\nUsage: python3 tikterm_ytdlp.py <tiktok_url>")
+        print("\nUsage: python3 tikterm_ytdlp.py <tiktok_url> [quality]")
+        print("\nQuality options:")
+        print("  best   - Best quality (slow download)")
+        print("  medium - 480p (balanced)")
+        print("  worst  - Lowest quality (fast download)")
         print("\nExample:")
         print("  python3 tikterm_ytdlp.py https://www.tiktok.com/@user/video/123")
+        print("  python3 tikterm_ytdlp.py https://www.tiktok.com/@user/video/123 medium")
         sys.exit(1)
     
     video_url = sys.argv[1]
+    quality = sys.argv[2] if len(sys.argv) > 2 else 'worst'
     
     # Download video
-    video_path = client.download_video(video_url)
+    video_path = client.download_video(video_url, quality)
     
     if video_path:
         # Play video
