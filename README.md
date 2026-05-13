@@ -1,3 +1,5 @@
+A CLI that downloads TikTok videos, converts to ASCII art, and plays in the terminal.
+
 Pretty simple:
 # Install yt-dlp
 sudo apt install yt-dlp
